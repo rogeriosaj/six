@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#c83232" />
+  <title>Laurla & Little Roger - Corredor de Memórias</title>
+  
+  <!-- Fontes Retro estilo GBA Pokémon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="./assets/index-DzdH_uKH.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-C276GETn.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header/Barra de topo do jogo -->
+    <header class="game-header">
+      <div class="header-title">
+        <span class="pokeball-icon">🔴</span> LAURLA'S JOURNEY
+      </div>
+      <div class="header-controls">
+        <button id="btn-audio" class="retro-btn-sm" title="Alternar Som">🔊</button>
+        <button id="btn-help" class="retro-btn-sm" title="Ajuda">❓</button>
+      </div>
+    </header>
+
+    <!-- Canvas Principal onde o jogo roda -->
+    <div class="canvas-container">
+      <canvas id="game-canvas"></canvas>
+
+      <!-- Overlay para aviso de Interagir (Aparece ao se aproximar de um quadro ou NPC) -->
+      <div id="interaction-prompt" class="interaction-prompt hidden">
+        <span class="prompt-key">A</span> Interagir
+      </div>
+    </div>
+
+    <!-- Modais do Jogo -->
+    <!-- Modal do Quadro (Memória) -->
+    <div id="memory-modal" class="gba-modal hidden">
+      <div class="gba-frame memory-frame">
+        <div class="gba-header">
+          <span class="gba-title" id="memory-title">Memória Especiais</span>
+          <button id="memory-close-x" class="gba-close-btn">&times;</button>
+        </div>
+        <div class="gba-body">
+          <div class="memory-image-wrapper">
+            <img id="memory-image" src="" alt="Foto da memória" />
+            <div id="memory-date" class="memory-badge-date">00/00/0000</div>
+          </div>
+          <div class="memory-content">
+            <p id="memory-description" class="gba-text">Descrição da memória...</p>
+          </div>
+        </div>
+        <div class="gba-footer">
+          <button id="memory-btn-close" class="gba-btn-action">FECHAR (B)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Diálogo estilo Pokémon Fire Red -->
+    <div id="dialogue-box" class="gba-dialogue-box hidden">
+      <div class="dialogue-character-tag" id="dialogue-speaker">Little Roger</div>
+      <div class="dialogue-content">
+        <p id="dialogue-text" class="dialogue-text"></p>
+        <div class="dialogue-arrow" id="dialogue-arrow">▼</div>
+      </div>
+    </div>
+
+
+
+    <!-- Modal de Instruções/Ajuda -->
+    <div id="help-modal" class="gba-modal hidden">
+      <div class="gba-frame help-frame">
+        <div class="gba-header">
+          <span class="gba-title">Como Jogar</span>
+          <button id="help-close-x" class="gba-close-btn">&times;</button>
+        </div>
+        <div class="gba-body help-body">
+          <p>🎮 <strong>Controles Mobile:</strong> Use o D-Pad na tela para mover a <strong>Laurla</strong> e o botão <strong>A</strong> para interagir.</p>
+          <p>⌨️ <strong>Teclado (PC):</strong> Setas/WASD para mover, <kbd>Z</kbd> ou <kbd>Espaço</kbd> para A (Interagir), <kbd>X</kbd> ou <kbd>Esc</kbd> para B (Fechar).</p>
+          <p>🖼️ <strong>Quadros:</strong> Chegue perto dos quadros na parede e pressione <strong>A</strong> para ver a foto, data e história!</p>
+          <p>👦🏻 <strong>Little Roger:</strong> Converse com o Little Roger no final do corredor para ouvir o que ele tem a dizer!</p>
+        </div>
+        <div class="gba-footer">
+          <button id="help-btn-close" class="gba-btn-action">ENTENDIDO!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles Virtuais Touch (Mobile-First) -->
+    <div class="touch-controls">
+      <!-- Joystick D-Pad Estilo Game Boy -->
+      <div class="dpad-container">
+        <button id="dpad-up" class="dpad-btn dpad-up" aria-label="Mover para cima">▲</button>
+        <button id="dpad-left" class="dpad-btn dpad-left" aria-label="Mover para esquerda">◀</button>
+        <div class="dpad-center"></div>
+        <button id="dpad-right" class="dpad-btn dpad-right" aria-label="Mover para direita">▶</button>
+        <button id="dpad-down" class="dpad-btn dpad-down" aria-label="Mover para baixo">▼</button>
+      </div>
+
+      <!-- Botões de Ação estilo GBA Fire Red -->
+      <div class="action-buttons-container">
+        <div class="btn-b-wrapper">
+          <button id="btn-b" class="gba-action-btn btn-b">B</button>
+          <span class="btn-label">Fechar</span>
+        </div>
+        <div class="btn-a-wrapper">
+          <button id="btn-a" class="gba-action-btn btn-a">A</button>
+          <span class="btn-label">Interagir</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
