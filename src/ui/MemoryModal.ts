@@ -40,6 +40,7 @@ export class MemoryModal {
     
     // Trata erro de carregamento caso o arquivo de foto ainda não tenha sido colocado na pasta
     this.imageEl.onerror = () => {
+      this.imageEl.onerror = null; // Evita loop de erros
       this.imageEl.src = `data:image/svg+xml;utf8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200">
           <rect width="320" height="200" fill="#2c3e50" />
