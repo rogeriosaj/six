@@ -78,6 +78,48 @@ export const MEMORIES: Memory[] = [
     date: "10 de Julho",
     description: "Registro bem formal do primeiro dia do Rock Rio Pardo, que foi muito bão.",
     image: "./images/rock.jpeg"
+  },
+  {
+    id: 6,
+    title: "Doce Arrependimento",
+    date: "20 de Junho",
+    description: "Sem comentários...",
+    image: "./images/mochi.jpeg"
+  },
+  {
+    id: 7,
+    title: "A acompanhante do café",
+    date: "15 de Abril",
+    description: "Uma personagem que sempre está presente, só que desmontada e que eu não lembro o nome. Agora se chama Matilda",
+    image: "./images/dedo.png"
+  },
+  {
+    id: 8,
+    title: "O Psicopato",
+    date: "25 de Março",
+    description: "Cuidado ao falar dele",
+    image: "./images/pato.jpeg"
+  },
+  {
+    id: 9,
+    title: "Vermelho e Grande",
+    date: "12 de Abril",
+    description: "Um Siri Caralhudo saindo",
+    image: "./images/siri.png"
+  },
+  {
+    id: 10,
+    title: "Singela viagem para a liberdade",
+    date: "1 de Setembro",
+    description: "A piroca mais doce já inventada, ainda não tive o prazer de experimentar",
+    image: "./images/piroca.jpeg"
+  },
+  {
+    id: 11,
+    title: "Memória Secreta 6",
+    date: "10 de Outubro",
+    description: "Ainda não escolhi esse, disgurpa",
+    image: "./images/sala6.jpeg"
   }
 ];
 

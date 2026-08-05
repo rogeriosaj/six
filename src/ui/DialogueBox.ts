@@ -22,6 +22,12 @@ export class DialogueBox {
     this.speakerEl = document.getElementById('dialogue-speaker')!;
     this.textEl = document.getElementById('dialogue-text')!;
     this.arrowEl = document.getElementById('dialogue-arrow')!;
+
+    // Permite clicar/tocar diretamente na caixa de texto para avançar o diálogo
+    this.containerEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.advance();
+    });
   }
 
   public show(speaker: string, text: string, onComplete?: () => void) {
@@ -50,14 +56,13 @@ export class DialogueBox {
         this.textEl.textContent = this.currentText;
         this.charIndex++;
 
-        // Som retro de digitação a cada 2 caracteres
         if (this.charIndex % 2 === 0) {
           sound.playTextBlip();
         }
       } else {
         this.finishTypewriter();
       }
-    }, 28); // Digitação no ritmo característico do GBA
+    }, 28);
   }
 
   public finishTypewriter() {
@@ -74,15 +79,19 @@ export class DialogueBox {
     // Se ainda está digitando, completa o texto instantaneamente no primeiro clique
     if (this.charIndex < this.fullText.length) {
       this.finishTypewriter();
-      return false; // Ainda não fechou
+      return false;
     }
 
-    // Se já terminou de digitar, fecha o balão
+    // Guarda callback antes de ocultar
+    const cb = this.onCompleteCallback;
+    this.onCompleteCallback = null;
+
     this.hide();
-    if (this.onCompleteCallback) {
-      this.onCompleteCallback();
+
+    if (cb) {
+      cb();
     }
-    return true; // Fechou com sucesso
+    return true;
   }
 
   public hide() {

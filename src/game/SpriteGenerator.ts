@@ -253,5 +253,39 @@ export function createMapTileSet(): HTMLCanvasElement {
   ctx.arc(142, 10, 6, 0, Math.PI * 2);
   ctx.fill();
 
+  // Tile 5: Porta Secreta de Madeira Retro GBA (x = 160)
+  ctx.fillStyle = '#37474f';
+  ctx.fillRect(160, 0, 32, 32);
+  // Moldura da porta
+  ctx.fillStyle = '#5d4037';
+  ctx.fillRect(164, 4, 24, 28);
+  // Painel de madeira da porta
+  ctx.fillStyle = '#8d6e63';
+  ctx.fillRect(166, 6, 20, 26);
+  ctx.fillStyle = '#6d4c41';
+  ctx.fillRect(168, 8, 7, 10);
+  ctx.fillRect(177, 8, 7, 10);
+  ctx.fillRect(168, 20, 7, 10);
+  ctx.fillRect(177, 20, 7, 10);
+  // Maçaneta dourada pulsante
+  ctx.fillStyle = '#fbc02d';
+  ctx.fillRect(182, 18, 3, 3);
+
+  // Tile 6: Quadro Secreto Trancado com Cadeado/Pano (x = 192)
+  ctx.fillStyle = '#455a64';
+  ctx.fillRect(192, 0, 32, 32);
+  // Moldura Escura Trancada
+  ctx.fillStyle = '#424242';
+  ctx.fillRect(194, 4, 28, 22);
+  ctx.fillStyle = '#212121';
+  ctx.fillRect(196, 6, 24, 18);
+  // Pano de mistério com ponto de interrogação
+  ctx.fillStyle = '#b71c1c';
+  ctx.fillRect(198, 8, 20, 14);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '10px "Press Start 2P", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('?', 208, 20);
+
   return canvas;
 }
