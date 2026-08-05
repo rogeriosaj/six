@@ -13,9 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   
-  <!-- CSS e JS Empacotados Prontos para o GitHub Pages -->
-  <script type="module" crossorigin src="./assets/index-B8BV0IlY.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-yzhGuSiK.css">
+  <script type="module" crossorigin src="./assets/index-DRdWSVcz.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CtCyBLBL.css">
 </head>
 <body>
   <div id="app">
@@ -93,26 +92,87 @@
       </div>
     </div>
 
+    <!-- Modal de Teclado Retro estilo Pokémon Fire Red -->
+    <div id="retro-keyboard" class="gba-modal hidden">
+      <div class="gba-frame keyboard-frame">
+        <div class="gba-header">
+          <span class="gba-title" id="keyboard-room-title">ENIGMA DA SALA</span>
+          <button id="keyboard-close-x" class="gba-close-btn">&times;</button>
+        </div>
+        <div class="gba-body keyboard-body">
+          <div id="keyboard-prompt" class="keyboard-riddle-question">
+            Pergunta do enigma...
+          </div>
+          <div class="keyboard-display">
+            <span id="keyboard-input-text"></span>
+            <span class="keyboard-cursor">_</span>
+          </div>
+          <div class="keyboard-grid">
+            <div class="kb-row">
+              <button class="kb-key">A</button>
+              <button class="kb-key">B</button>
+              <button class="kb-key">C</button>
+              <button class="kb-key">D</button>
+              <button class="kb-key">E</button>
+              <button class="kb-key">F</button>
+              <button class="kb-key">G</button>
+              <button class="kb-key">H</button>
+              <button class="kb-key">I</button>
+            </div>
+            <div class="kb-row">
+              <button class="kb-key">J</button>
+              <button class="kb-key">K</button>
+              <button class="kb-key">L</button>
+              <button class="kb-key">M</button>
+              <button class="kb-key">N</button>
+              <button class="kb-key">O</button>
+              <button class="kb-key">P</button>
+              <button class="kb-key">Q</button>
+              <button class="kb-key">R</button>
+            </div>
+            <div class="kb-row">
+              <button class="kb-key">S</button>
+              <button class="kb-key">T</button>
+              <button class="kb-key">U</button>
+              <button class="kb-key">V</button>
+              <button class="kb-key">W</button>
+              <button class="kb-key">X</button>
+              <button class="kb-key">Y</button>
+              <button class="kb-key">Z</button>
+              <button class="kb-key kb-action" id="kb-back" aria-label="Apagar">⌫</button>
+            </div>
+            <div class="kb-row kb-row-actions">
+              <button class="kb-key kb-action kb-space" id="kb-space">ESPAÇO</button>
+              <button class="kb-key kb-action kb-ok" id="kb-ok">CONFIRMAR (OK)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Controles Virtuais Touch (Mobile-First) -->
     <div class="touch-controls">
-      <!-- Joystick D-Pad Estilo Game Boy -->
-      <div class="dpad-container">
-        <button id="dpad-up" class="dpad-btn dpad-up" aria-label="Mover para cima">▲</button>
-        <button id="dpad-left" class="dpad-btn dpad-left" aria-label="Mover para esquerda">◀</button>
-        <div class="dpad-center"></div>
-        <button id="dpad-right" class="dpad-btn dpad-right" aria-label="Mover para direita">▶</button>
-        <button id="dpad-down" class="dpad-btn dpad-down" aria-label="Mover para baixo">▼</button>
-      </div>
-
-      <!-- Botões de Ação estilo GBA Fire Red -->
-      <div class="action-buttons-container">
-        <div class="btn-b-wrapper">
-          <button id="btn-b" class="gba-action-btn btn-b">B</button>
-          <span class="btn-label">Fechar</span>
+      <!-- Wrapper dos Joysticks (D-Pad e Botões A/B) -->
+      <div id="joystick-controls" class="joystick-controls">
+        <!-- Joystick D-Pad Estilo Game Boy -->
+        <div class="dpad-container">
+          <button id="dpad-up" class="dpad-btn dpad-up" aria-label="Mover para cima">▲</button>
+          <button id="dpad-left" class="dpad-btn dpad-left" aria-label="Mover para esquerda">◀</button>
+          <div class="dpad-center"></div>
+          <button id="dpad-right" class="dpad-btn dpad-right" aria-label="Mover para direita">▶</button>
+          <button id="dpad-down" class="dpad-btn dpad-down" aria-label="Mover para baixo">▼</button>
         </div>
-        <div class="btn-a-wrapper">
-          <button id="btn-a" class="gba-action-btn btn-a">A</button>
-          <span class="btn-label">Interagir</span>
+
+        <!-- Botões de Ação estilo GBA Fire Red -->
+        <div class="action-buttons-container">
+          <div class="btn-b-wrapper">
+            <button id="btn-b" class="gba-action-btn btn-b">B</button>
+            <span class="btn-label">Fechar</span>
+          </div>
+          <div class="btn-a-wrapper">
+            <button id="btn-a" class="gba-action-btn btn-a">A</button>
+            <span class="btn-label">Interagir</span>
+          </div>
         </div>
       </div>
     </div>
