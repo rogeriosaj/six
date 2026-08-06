@@ -155,6 +155,87 @@ class SoundEngine {
     osc.stop(this.ctx.currentTime + 0.05);
   }
 
+  // Efeito de Abertura de Batalha estilo Pokémon
+  public playEncounter() {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [300, 450, 600, 750, 900, 1050];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+
+      gain.gain.setValueAtTime(0.12, now + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.08);
+
+      osc.connect(gain);
+      gain.connect(this.ctx!.destination);
+
+      osc.start(now + idx * 0.05);
+      osc.stop(now + idx * 0.05 + 0.08);
+    });
+  }
+
+  // Efeito de Ataque em Batalha
+  public playAttack() {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.12);
+
+    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.12);
+  }
+
+  // Efeito de Vitória na Batalha
+  public playVictory() {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [523.25, 523.25, 523.25, 659.25, 783.99, 1046.50];
+    const durations = [0.08, 0.08, 0.08, 0.15, 0.15, 0.4];
+
+    let timeAcc = 0;
+    notes.forEach((freq, idx) => {
+      const dur = durations[idx];
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + timeAcc);
+
+      gain.gain.setValueAtTime(0.15, now + timeAcc);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + timeAcc + dur);
+
+      osc.connect(gain);
+      gain.connect(this.ctx!.destination);
+
+      osc.start(now + timeAcc);
+      osc.stop(now + timeAcc + dur);
+
+      timeAcc += dur + 0.02;
+    });
+  }
+
   // Música BGM Synthetizada em estilo GBA (Loop calmo estilo Pallet Town / Route 1)
   public startBgm() {
     if (this.isPlayingBgm) return;
@@ -213,3 +294,4 @@ class SoundEngine {
 }
 
 export const sound = new SoundEngine();
+

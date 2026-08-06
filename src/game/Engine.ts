@@ -1,15 +1,13 @@
-/* ==========================================================================
-   Motor Principal do Jogo (Game Engine, Render Loop, Câmera & 6 Enigmas)
-   ========================================================================== */
-
 import { CorridorMap, InteractivePainting, MapType } from './Map';
 import { Player } from './Player';
-import { LittleRogerNPC } from './NPC';
+import { LittleRogerNPC, CaitDogNPC, KoraDogNPC } from './NPC';
 import { ControlManager } from '../ui/Controls';
 import { DialogueBox } from '../ui/DialogueBox';
 import { MemoryModal } from '../ui/MemoryModal';
 import { KeyboardManager } from '../ui/Keyboard';
+import { BattleModal } from '../ui/BattleModal';
 import { loadMemories, Memory } from '../data/memories';
+import { AnimalType } from './SpriteGenerator';
 import { sound } from './Audio';
 
 export class GameEngine {
@@ -19,15 +17,21 @@ export class GameEngine {
   private map: CorridorMap;
   private player: Player;
   private rogerNPC: LittleRogerNPC;
+  private caitNPC: CaitDogNPC;
+  private koraNPC: KoraDogNPC;
 
   private controls: ControlManager;
   private dialogueBox: DialogueBox;
   private memoryModal: MemoryModal;
   private keyboard: KeyboardManager;
+  private battleModal: BattleModal;
 
   private memories: Memory[];
 
   private promptEl: HTMLElement;
+
+  private foundKora: boolean = false;
+  private grassStepCounter: number = 0;
 
   // Estado dos Enigmas das 6 Salas Secretas (true = liberada)
   private unlockedRooms: Record<number, boolean> = {
@@ -58,11 +62,14 @@ export class GameEngine {
     this.map = new CorridorMap('main');
     this.player = new Player(2 * 32, 3.5 * 32);
     this.rogerNPC = new LittleRogerNPC(19 * 32, 3.5 * 32);
+    this.caitNPC = new CaitDogNPC(1.5 * 32, 3.5 * 32); // Cait (Guia de Laurla)
+    this.koraNPC = new KoraDogNPC(24 * 32, 4.5 * 32); // Kora (Irmã de Cait no Jardim)
 
     this.controls = new ControlManager();
     this.dialogueBox = new DialogueBox();
     this.memoryModal = new MemoryModal();
     this.keyboard = new KeyboardManager();
+    this.battleModal = new BattleModal();
 
     this.memories = loadMemories();
 
@@ -118,31 +125,81 @@ export class GameEngine {
 
   private update(dt: number) {
     this.rogerNPC.update(dt);
+    if (this.foundKora) {
+      this.koraNPC.update(dt);
+    }
 
-    const isModalOpen = this.memoryModal.isOpen() || this.dialogueBox.isOpen() || this.keyboard.isKeyboardOpen();
+    const isModalOpen = this.memoryModal.isOpen() || this.dialogueBox.isOpen() || this.keyboard.isKeyboardOpen() || this.battleModal.isOpen();
 
     if (!isModalOpen) {
       const moveVector = this.controls.getMoveVector();
       this.player.update(dt, moveVector, this.map);
 
-      // Transição 1: Caminhar para a direita no Corredor Principal vai para o Corredor de Enigmas
+      // Cait e Kora seguem a Laurla fielmente no mapa!
+      this.caitNPC.followPlayer(this.player.x, this.player.y, this.player.direction, dt);
+      if (this.foundKora) {
+        this.koraNPC.followPlayer(this.player.x, this.player.y, this.player.direction, dt);
+      }
+
+      // Checa Encontro na Grama Alta (Mapa Externo estilo Pokémon Fire Red)
+      if (this.map.type === 'outside' && this.player.isMoving && this.map.isTallGrass(this.player.x, this.player.y)) {
+        this.grassStepCounter++;
+        if (this.grassStepCounter > 12) {
+          this.grassStepCounter = 0;
+          if (Math.random() < 0.35) { // 35% de chance de encontro na grama alta
+            // Se Kora ainda não foi encontrada, há uma alta chance de encontrar Kora escondida nos arbustos!
+            if (!this.foundKora && Math.random() < 0.45) {
+              this.foundKora = true;
+              this.koraNPC.x = this.player.x + 20;
+              this.koraNPC.y = this.player.y;
+              sound.playOpenModal();
+              this.dialogueBox.show(
+                "Kora & Cait 🐾",
+                "AAU AAU AAU AAAAAUUUU AUAUAUAUAU!W"
+              );
+              return;
+            }
+
+            // Batalha com animais selvagens (Passarinho, Ratinho, Gatinho, Esquilo)
+            const animals: AnimalType[] = ['bird', 'rat', 'cat', 'squirrel'];
+            const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+            this.battleModal.startBattle(randomAnimal, (_won) => {
+              // Batalha finalizada
+            });
+            return;
+          }
+        }
+      }
+
+      // Transições de Mapa
+      // 1. Ir para Corredor Secreto
       if (this.map.type === 'main' && this.player.x >= 20.2 * 32) {
         this.switchMap('secret_corridor');
       }
 
-      // Transição 2: Caminhar para a esquerda no Corredor de Enigmas volta para o Corredor Principal
+      // 2. Voltar para Corredor Principal do Corredor Secreto
       if (this.map.type === 'secret_corridor' && this.player.x <= 0.8 * 32) {
         this.switchMap('main');
       }
 
-      // Transição 3: Caminhar para fora de qualquer Sala Secreta volta para o Corredor de Enigmas
+      // 3. Voltar de Salas Secretas
       if (this.map.type.startsWith('room') && this.player.y >= 5.2 * 32) {
         const roomNum = parseInt(this.map.type.replace('room', ''), 10);
         this.switchMap('secret_corridor', roomNum);
       }
+
+      // 4. Ir para o Jardim Externo a partir do Corredor Principal (Porta Esquerda Superior)
+      if (this.map.type === 'main' && this.player.x <= 1.8 * 32 && this.player.y <= 2.2 * 32) {
+        this.switchMap('outside');
+      }
+
+      // 5. Voltar do Jardim Externo para a Galeria Principal (Portal Esquerda c=0, r=9,10)
+      if (this.map.type === 'outside' && this.player.x <= 0.8 * 32 && (this.player.y >= 8 * 32 && this.player.y <= 12 * 32)) {
+        this.switchMap('main', 0, true);
+      }
     }
 
-    // Atualiza posição da Câmera
+    // Câmera
     const targetCamX = this.player.x + 8 - this.internalWidth / 2;
     const maxCamX = this.map.cols * 32 - this.internalWidth;
     this.cameraX = Math.max(0, Math.min(targetCamX, maxCamX));
@@ -151,16 +208,28 @@ export class GameEngine {
     const maxCamY = this.map.rows * 32 - this.internalHeight;
     this.cameraY = Math.max(0, Math.min(targetCamY, maxCamY));
 
-    // Proximidade e Prompts de Interação
+    // Proximidades
     const facingPainting = this.map.getFacingPainting(this.player.x, this.player.y, this.player.direction);
     const facingDoorNum = this.map.getFacingDoorIndex(this.player.x, this.player.y, this.player.direction);
     const isNearRoger = this.isPlayerNearRoger();
+    const isNearCait = this.isPlayerNearCait();
+    const isNearKora = this.foundKora && this.isPlayerNearKora();
+    const isNearGardenDoor = this.map.type === 'main' && (this.player.x <= 2.5 * 32 && this.player.y <= 2.8 * 32);
 
     const currentRoomNum = this.map.type.startsWith('room') ? parseInt(this.map.type.replace('room', ''), 10) : 0;
     const isCurrentRoomUnlocked = currentRoomNum > 0 ? this.unlockedRooms[currentRoomNum] : false;
 
     if (!isModalOpen) {
-      if (facingDoorNum > 0) {
+      if (isNearGardenDoor) {
+        this.promptEl.classList.remove('hidden');
+        this.promptEl.innerHTML = `<span class="prompt-key">A</span> Entrar no Jardim Secreto`;
+      } else if (isNearKora) {
+        this.promptEl.classList.remove('hidden');
+        this.promptEl.innerHTML = `<span class="prompt-key">A</span> Falar com Kora 🐾`;
+      } else if (isNearCait) {
+        this.promptEl.classList.remove('hidden');
+        this.promptEl.innerHTML = `<span class="prompt-key">A</span> Falar com Cait 🐾`;
+      } else if (facingDoorNum > 0) {
         this.promptEl.classList.remove('hidden');
         this.promptEl.innerHTML = `<span class="prompt-key">A</span> Entrar na Sala ${facingDoorNum}`;
       } else if (facingPainting) {
@@ -180,7 +249,7 @@ export class GameEngine {
       this.promptEl.classList.add('hidden');
     }
 
-    // Processamento do Botão A (Interagir)
+    // Botão A
     if (!this.keyboard.isKeyboardOpen() && this.controls.consumeATrigger()) {
       sound.startBgm();
 
@@ -188,6 +257,30 @@ export class GameEngine {
         this.dialogueBox.advance();
       } else if (this.memoryModal.isOpen()) {
         this.memoryModal.close();
+      } else if (isNearGardenDoor) {
+        this.switchMap('outside');
+      } else if (isNearKora) {
+        this.koraNPC.facePlayer(this.player);
+        this.caitNPC.facePlayer(this.player);
+        sound.playOpenModal();
+        this.dialogueBox.show(
+          "Kora 🐾",
+          "AAAAAAAAAAAAAUUUUUUUUUUUUUU AU!W"
+        );
+      } else if (isNearCait) {
+        this.caitNPC.facePlayer(this.player);
+        sound.playOpenModal();
+        if (!this.foundKora) {
+          this.dialogueBox.show(
+            "Cait 🐾",
+            "AU AU AU AU AUAUAUAUAU AU!"
+          );
+        } else {
+          this.dialogueBox.show(
+            "Cait 🐾",
+            "Au au, au, auauauauauauauauauau! Aaaau"
+          );
+        }
       } else if (facingDoorNum > 0) {
         this.switchMap(`room${facingDoorNum}` as MapType);
       } else if (facingPainting) {
@@ -228,7 +321,7 @@ export class GameEngine {
       }
     }
 
-    // Processamento do Botão B (Fechar)
+    // Botão B
     if (!this.keyboard.isKeyboardOpen() && this.controls.consumeBTrigger()) {
       if (this.memoryModal.isOpen()) {
         this.memoryModal.close();
@@ -257,13 +350,27 @@ export class GameEngine {
     }
   }
 
-  private switchMap(targetMap: MapType, returningFromRoomNum: number = 0) {
+  private switchMap(targetMap: MapType, returningFromRoomNum: number = 0, returningFromOutside: boolean = false) {
     sound.playOpenModal();
     this.map = new CorridorMap(targetMap);
 
-    if (targetMap === 'secret_corridor') {
+    if (targetMap === 'outside') {
+      // Posiciona Laurla na entrada do Jardim Externo
+      this.player.x = 1.5 * 32;
+      this.player.y = 9.5 * 32;
+      this.player.direction = 'right';
+
+      this.caitNPC.x = 1.2 * 32;
+      this.caitNPC.y = 9.5 * 32;
+      this.caitNPC.direction = 'right';
+
+      if (this.foundKora) {
+        this.koraNPC.x = 1.0 * 32;
+        this.koraNPC.y = 9.5 * 32;
+        this.koraNPC.direction = 'right';
+      }
+    } else if (targetMap === 'secret_corridor') {
       if (returningFromRoomNum > 0) {
-        // Retornando de uma sala secreta: posiciona Laurla em frente à porta daquela sala
         const doorTileX = [4, 8, 12, 16, 20, 24][returningFromRoomNum - 1] || 4;
         this.player.x = doorTileX * 32;
         this.player.y = 2.5 * 32;
@@ -273,7 +380,6 @@ export class GameEngine {
         this.rogerNPC.y = 3.5 * 32;
         this.rogerNPC.direction = 'up';
       } else {
-        // Entrando vindo do Corredor Principal
         this.player.x = 1.5 * 32;
         this.player.y = 3.5 * 32;
         this.player.direction = 'right';
@@ -283,7 +389,6 @@ export class GameEngine {
         this.rogerNPC.direction = 'left';
       }
     } else if (targetMap.startsWith('room')) {
-      // Entrando em uma das Salas Secretas
       this.player.x = 4 * 32;
       this.player.y = 4.5 * 32;
       this.player.direction = 'up';
@@ -292,16 +397,23 @@ export class GameEngine {
       this.rogerNPC.y = 2.5 * 32;
       this.rogerNPC.direction = 'left';
     } else {
-      // Retornando para o Corredor Principal
-      this.player.x = 19.5 * 32;
-      this.player.y = 3.5 * 32;
-      this.player.direction = 'left';
+      // Corredor Principal
+      if (returningFromOutside) {
+        this.player.x = 1.5 * 32;
+        this.player.y = 3.2 * 32;
+        this.player.direction = 'down';
+      } else {
+        this.player.x = 19.5 * 32;
+        this.player.y = 3.5 * 32;
+        this.player.direction = 'left';
+      }
 
       this.rogerNPC.x = 19 * 32;
       this.rogerNPC.y = 3.5 * 32;
       this.rogerNPC.direction = 'down';
     }
   }
+
 
   private launchRiddleKeyboard(roomNum: number) {
     const question = this.getRiddleQuestion(roomNum);
@@ -349,6 +461,18 @@ export class GameEngine {
     return dx <= 38 && dy <= 38;
   }
 
+  private isPlayerNearCait(): boolean {
+    const dx = Math.abs((this.player.x + 8) - (this.caitNPC.x + 8));
+    const dy = Math.abs((this.player.y + 10) - (this.caitNPC.y + 10));
+    return dx <= 32 && dy <= 32;
+  }
+
+  private isPlayerNearKora(): boolean {
+    const dx = Math.abs((this.player.x + 8) - (this.koraNPC.x + 8));
+    const dy = Math.abs((this.player.y + 10) - (this.koraNPC.y + 10));
+    return dx <= 38 && dy <= 38;
+  }
+
   private render() {
     this.ctx.save();
 
@@ -357,17 +481,39 @@ export class GameEngine {
 
     this.ctx.translate(-Math.round(this.cameraX), -Math.round(this.cameraY));
 
-    // Renderiza o mapa com o estado de desbloqueio de todas as 6 salas secretas
+    // Renderiza o mapa
     this.map.render(this.ctx, this.animTime, this.unlockedRooms);
 
-    // Y-sorting para renderização de profundidade dos personagens
-    if (this.player.y < this.rogerNPC.y) {
-      this.player.render(this.ctx);
-      this.rogerNPC.render(this.ctx, this.animTime);
-    } else {
-      this.rogerNPC.render(this.ctx, this.animTime);
-      this.player.render(this.ctx);
+    // Y-sorting para profundidade de renderização dos personagens
+    const renderEntities: { y: number; draw: () => void }[] = [];
+
+    renderEntities.push({
+      y: this.player.y,
+      draw: () => this.player.render(this.ctx)
+    });
+
+    renderEntities.push({
+      y: this.caitNPC.y,
+      draw: () => this.caitNPC.render(this.ctx)
+    });
+
+    if (this.map.type !== 'outside') {
+      renderEntities.push({
+        y: this.rogerNPC.y,
+        draw: () => this.rogerNPC.render(this.ctx, this.animTime)
+      });
     }
+
+    if (this.foundKora) {
+      renderEntities.push({
+        y: this.koraNPC.y,
+        draw: () => this.koraNPC.render(this.ctx)
+      });
+    }
+
+
+    renderEntities.sort((a, b) => a.y - b.y);
+    renderEntities.forEach(entity => entity.draw());
 
     this.ctx.restore();
   }

@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   
-  <script type="module" crossorigin src="./assets/index-DRdWSVcz.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CtCyBLBL.css">
+  <script type="module" crossorigin src="./assets/index-DfLdIbQq.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BZDCoEBt.css">
 </head>
 <body>
   <div id="app">
@@ -71,6 +71,62 @@
       </div>
     </div>
 
+    <!-- Modal de Batalha estilo Pokémon Fire Red (Turn-Based Battle) -->
+    <div id="battle-modal" class="gba-modal hidden">
+      <div class="gba-frame battle-frame">
+        <div class="gba-header battle-header">
+          <span class="gba-title">💥 BATALHA ANIMAL SELVAGEM 💥</span>
+        </div>
+        <div class="battle-scene">
+          <!-- Inimigo Selvagem (Topo Direito) -->
+          <div class="enemy-status-box">
+            <div class="status-name-lvl">
+              <span id="enemy-name">Passarinho</span>
+            </div>
+            <div class="hp-bar-wrapper">
+              <span class="hp-label">HP</span>
+              <div class="hp-bar-bg">
+                <div id="enemy-hp-fill" class="hp-fill" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="enemy-sprite-container">
+            <canvas id="enemy-canvas" width="48" height="48"></canvas>
+          </div>
+
+          <!-- Cait (Cãozinho Aliado - Baixo Esquerdo) -->
+          <div class="player-sprite-container">
+            <canvas id="cait-canvas" width="48" height="48"></canvas>
+          </div>
+          <div class="player-status-box">
+            <div class="status-name-lvl">
+              <span id="cait-name">Cait 🐾</span>
+            </div>
+
+            <div class="hp-bar-wrapper">
+              <span class="hp-label">HP</span>
+              <div class="hp-bar-bg">
+                <div id="cait-hp-fill" class="hp-fill" style="width: 100%;"></div>
+              </div>
+            </div>
+            <div id="cait-hp-text" class="hp-text-num">30/30</div>
+          </div>
+        </div>
+
+        <!-- Caixa de Diálogo e Menu de Ações de Batalha -->
+        <div class="battle-controls-box">
+          <div id="battle-message-text" class="battle-message">
+            Um Passarinho selvagem apareceu! Cait entrou na batalha!
+          </div>
+          <div id="battle-actions-grid" class="battle-actions">
+            <button id="btn-attack" class="battle-btn btn-atk">⚡ ATACAR</button>
+            <button id="btn-special" class="battle-btn btn-spec">📢 ROSNAR</button>
+            <button id="btn-treat" class="battle-btn btn-item">🦴 PETISCO</button>
+            <button id="btn-run" class="battle-btn btn-run">🏃 FUGIR</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
     <!-- Modal de Instruções/Ajuda -->
