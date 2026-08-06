@@ -116,10 +116,10 @@ export const MEMORIES: Memory[] = [
   },
   {
     id: 11,
-    title: "Memória Secreta 6",
-    date: "10 de Outubro",
-    description: "Ainda não escolhi esse, disgurpa",
-    image: "./images/sala6.jpeg"
+    title: "Chico Bento no Shóppiiing",
+    date: "26 de Julho",
+    description: "Um do rolê que tinha muito potencial para ser um dos rolês já feitos",
+    image: "./images/role.png"
   }
 ];
 

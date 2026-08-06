@@ -125,7 +125,7 @@ export class GameEngine {
 
   private update(dt: number) {
     this.rogerNPC.update(dt);
-    if (this.foundKora) {
+    if (this.map.type === 'outside' && this.foundKora) {
       this.koraNPC.update(dt);
     }
 
@@ -135,10 +135,12 @@ export class GameEngine {
       const moveVector = this.controls.getMoveVector();
       this.player.update(dt, moveVector, this.map);
 
-      // Cait e Kora seguem a Laurla fielmente no mapa!
-      this.caitNPC.followPlayer(this.player.x, this.player.y, this.player.direction, dt);
-      if (this.foundKora) {
-        this.koraNPC.followPlayer(this.player.x, this.player.y, this.player.direction, dt);
+      // Cait e Kora seguem a Laurla apenas na área externa (Jardim)!
+      if (this.map.type === 'outside') {
+        this.caitNPC.followPlayer(this.player.x, this.player.y, this.player.direction, dt);
+        if (this.foundKora) {
+          this.koraNPC.followPlayer(this.player.x, this.player.y, this.player.direction, dt);
+        }
       }
 
       // Checa Encontro na Grama Alta (Mapa Externo estilo Pokémon Fire Red)
@@ -212,8 +214,8 @@ export class GameEngine {
     const facingPainting = this.map.getFacingPainting(this.player.x, this.player.y, this.player.direction);
     const facingDoorNum = this.map.getFacingDoorIndex(this.player.x, this.player.y, this.player.direction);
     const isNearRoger = this.isPlayerNearRoger();
-    const isNearCait = this.isPlayerNearCait();
-    const isNearKora = this.foundKora && this.isPlayerNearKora();
+    const isNearCait = this.map.type === 'outside' && this.isPlayerNearCait();
+    const isNearKora = this.map.type === 'outside' && this.foundKora && this.isPlayerNearKora();
     const isNearGardenDoor = this.map.type === 'main' && (this.player.x <= 2.5 * 32 && this.player.y <= 2.8 * 32);
 
     const currentRoomNum = this.map.type.startsWith('room') ? parseInt(this.map.type.replace('room', ''), 10) : 0;
@@ -344,7 +346,7 @@ export class GameEngine {
       case 5:
         return "Para revelar esta memória, responda: É vendido junto com a larissinha...";
       case 6:
-        return "Ainda não escolhiiiiiii";
+        return "Para revelar essa memória, responda: Em qual lugar um rolê muito bueno poderia ter rolado?";
       default:
         return "Qual é a resposta para este enigma secreto?";
     }
@@ -437,7 +439,7 @@ export class GameEngine {
     else if (roomNum === 3 && (cleanAnswer === 'psicopata' || cleanAnswer === 'psicopato')) isCorrect = true;
     else if (roomNum === 4 && (cleanAnswer === 'caralhudo' || cleanAnswer === 'siri caralhudo')) isCorrect = true;
     else if (roomNum === 5 && (cleanAnswer === 'piroca' || cleanAnswer === 'chocogozo')) isCorrect = true;
-    else if (roomNum === 6 && (cleanAnswer === 'sete' || cleanAnswer === '7' || cleanAnswer === 'seis' || cleanAnswer === '6')) isCorrect = true;
+    else if (roomNum === 6 && (cleanAnswer === 'shopping' || cleanAnswer === 'Ourinhos' || cleanAnswer === 'ourinhos')) isCorrect = true;
 
     if (isCorrect) {
       this.unlockedRooms[roomNum] = true;
@@ -492,10 +494,19 @@ export class GameEngine {
       draw: () => this.player.render(this.ctx)
     });
 
-    renderEntities.push({
-      y: this.caitNPC.y,
-      draw: () => this.caitNPC.render(this.ctx)
-    });
+    if (this.map.type === 'outside') {
+      renderEntities.push({
+        y: this.caitNPC.y,
+        draw: () => this.caitNPC.render(this.ctx)
+      });
+
+      if (this.foundKora) {
+        renderEntities.push({
+          y: this.koraNPC.y,
+          draw: () => this.koraNPC.render(this.ctx)
+        });
+      }
+    }
 
     if (this.map.type !== 'outside') {
       renderEntities.push({
@@ -503,14 +514,6 @@ export class GameEngine {
         draw: () => this.rogerNPC.render(this.ctx, this.animTime)
       });
     }
-
-    if (this.foundKora) {
-      renderEntities.push({
-        y: this.koraNPC.y,
-        draw: () => this.koraNPC.render(this.ctx)
-      });
-    }
-
 
     renderEntities.sort((a, b) => a.y - b.y);
     renderEntities.forEach(entity => entity.draw());
