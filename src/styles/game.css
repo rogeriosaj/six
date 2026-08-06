@@ -666,3 +666,174 @@ html, body {
     bottom: 180px;
   }
 }
+
+/* ==========================================================================
+   Estilos do Modal de Batalha estilo Pokémon Fire Red
+   ========================================================================== */
+
+.battle-frame {
+  max-width: 480px;
+  background: #1b1b22;
+  border: 4px solid #d32f2f;
+}
+
+.battle-header {
+  background: linear-gradient(180deg, #d32f2f 0%, #b71c1c 100%);
+  color: #fff;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.battle-scene {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(180deg, #81c784 0%, #388e3c 100%);
+  border-bottom: 3px solid #2e7d32;
+  overflow: hidden;
+}
+
+/* Status do Inimigo (Topo Direito) */
+.enemy-status-box {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f8f9fa;
+  border: 2px solid #37474f;
+  border-radius: 6px;
+  padding: 6px 10px;
+  width: 150px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+/* Status de Cait (Baixo Esquerdo) */
+.player-status-box {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: #f8f9fa;
+  border: 2px solid #37474f;
+  border-radius: 6px;
+  padding: 6px 10px;
+  width: 150px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.status-name-lvl {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: #212121;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.status-lvl {
+  color: #d32f2f;
+}
+
+.hp-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hp-label {
+  font-size: 7px;
+  color: #d84315;
+  font-weight: bold;
+}
+
+.hp-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #cfd8dc;
+  border: 1px solid #37474f;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hp-fill {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.hp-text-num {
+  font-size: 7px;
+  color: #455a64;
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* Sprites na Arena */
+.enemy-sprite-container {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+}
+
+.player-sprite-container {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+/* Controls de Batalha (Caixa de Texto e Botões) */
+.battle-controls-box {
+  background: #eceff1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.battle-message {
+  background: #ffffff;
+  border: 2px solid #90a4ae;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 8px;
+  line-height: 1.6;
+  color: #212121;
+  min-height: 38px;
+}
+
+.battle-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.battle-btn {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  padding: 8px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+  touch-action: manipulation;
+}
+
+.battle-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4);
+}
+
+.btn-atk {
+  background: linear-gradient(180deg, #e53935 0%, #b71c1c 100%);
+}
+
+.btn-spec {
+  background: linear-gradient(180deg, #ff9800 0%, #e65100 100%);
+}
+
+.btn-item {
+  background: linear-gradient(180deg, #4caf50 0%, #1b5e20 100%);
+}
+
+.btn-run {
+  background: linear-gradient(180deg, #78909c 0%, #37474f 100%);
+}
