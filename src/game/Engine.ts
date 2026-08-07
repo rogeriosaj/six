@@ -162,8 +162,8 @@ export class GameEngine {
               return;
             }
 
-            // Batalha com animais selvagens (Passarinho, Ratinho, Gatinho, Esquilo)
-            const animals: AnimalType[] = ['bird', 'rat', 'cat', 'squirrel'];
+            // Batalha com animais selvagens (Passarinho, Ratinho, Gatinho, Esquilo, Luna)
+            const animals: AnimalType[] = ['bird', 'rat', 'cat', 'squirrel', 'luna'];
             const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
             this.battleModal.startBattle(randomAnimal, (_won) => {
               // Batalha finalizada
@@ -267,7 +267,7 @@ export class GameEngine {
         sound.playOpenModal();
         this.dialogueBox.show(
           "Kora 🐾",
-          "AAAAAAAAAAAAAUUUUUUUUUUUUUU AU!W"
+          "AAAAAAAAAAAAAUUUUUUUUUUUUUU AU!"
         );
       } else if (isNearCait) {
         this.caitNPC.facePlayer(this.player);

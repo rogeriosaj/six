@@ -73,6 +73,13 @@ export class BattleModal {
     this.onCompleteCallback = onComplete;
     this.isTurnBusy = false;
 
+    // Reset botão de fugir e botões de ação para exibição padrão
+    this.btnAttack.style.display = '';
+    this.btnSpecial.style.display = '';
+    this.btnTreat.style.display = '';
+    this.btnRun.style.display = '';
+    this.btnRun.style.gridColumn = '';
+
     // Define nomes e atributos conforme o animal selvagem
     if (animalType === 'luna') {
       this.enemyName = 'Luna (Gatinha Branca)';
@@ -83,16 +90,19 @@ export class BattleModal {
       this.updateHpBars();
       this.renderSprites();
 
-      this.messageEl.textContent = '🐾 Luna, a Gatinha Branca, apareceu! Cait ficou assustada e saiu correndo! 🙀';
-      this.actionsGridEl.classList.add('hidden');
+      this.messageEl.textContent = '🐾 Luna, a Gatinha Branca, apareceu! Cait ficou assustada! 🙀';
+      
+      // Esconde botões de ataque/item e exibe apenas o botão de FUGIR para o jogador clicar
+      this.btnAttack.style.display = 'none';
+      this.btnSpecial.style.display = 'none';
+      this.btnTreat.style.display = 'none';
+      this.btnRun.style.display = '';
+      this.btnRun.style.gridColumn = '1 / -1';
+
+      this.actionsGridEl.classList.remove('hidden');
       this.modalEl.classList.remove('hidden');
       this.isVisible = true;
       sound.playEncounter();
-
-      setTimeout(() => {
-        sound.playCancel();
-        this.endBattle(false);
-      }, 1600);
       return;
     }
 
@@ -225,6 +235,11 @@ export class BattleModal {
   }
 
   private endBattle(won: boolean) {
+    this.btnAttack.style.display = '';
+    this.btnSpecial.style.display = '';
+    this.btnTreat.style.display = '';
+    this.btnRun.style.display = '';
+    this.btnRun.style.gridColumn = '';
     this.modalEl.classList.add('hidden');
     this.isVisible = false;
     this.isTurnBusy = false;
